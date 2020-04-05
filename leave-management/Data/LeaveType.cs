@@ -14,6 +14,7 @@ namespace leave_management.Data
         [Required]
         public string Name { get; set; }
 
+        [Display( Name ="Date Created")]
         public DateTime DateCreated { get; set; }
     }
 }

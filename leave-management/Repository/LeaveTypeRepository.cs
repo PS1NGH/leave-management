@@ -43,6 +43,18 @@ namespace leave_management.Repository
             throw new NotImplementedException();
         }
 
+        public bool IsExists( int id)
+        {
+            var exists = _db.LeaveAllocations.Any(x => x.Id == id);
+
+            return exists;
+        }
+
+        public bool IsExists()
+        {
+            throw new NotImplementedException();
+        }
+
         public bool Save()
         {
             return _db.SaveChanges() > 0; ;
