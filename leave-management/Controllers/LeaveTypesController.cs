@@ -9,10 +9,11 @@ using leave_management.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections;
-
+using Microsoft.AspNetCore.Authorization;
 
 namespace leave_management.Controllers
 {
+    [Authorize( Roles ="Administrator")]
     public class LeaveTypesController : Controller
     {
         private readonly ILeaveTypeRepository _repo;

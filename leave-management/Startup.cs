@@ -10,6 +10,7 @@ using leave_management.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,15 +33,20 @@ namespace leave_management
             
            // services.AddDbContext<leave_managementContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddDbContext<IdentityDataContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<IdentityDataContext>();
+           
             services.AddScoped<ILeaveTypeRepository, LeaveTypeRepository>();
             services.AddScoped<ILeaveHistory, LeavehistoryRepository>();
             services.AddScoped<ILeaveAllocations, LeaveAllocationRepository>();
             services.AddAutoMapper(typeof(Maps));
             services.AddControllersWithViews();
+            services.AddRazorPages();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager )
         {
             if (env.IsDevelopment())
             {
@@ -57,13 +63,21 @@ namespace leave_management
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
+            SeedData.Seed(userManager, roleManager);
+
+
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+                app.UseEndpoints(endpoints =>
+                {
+                    endpoints.MapRazorPages();
+                });
             });
         }
     }
